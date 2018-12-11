@@ -105,6 +105,7 @@ set (blends_CPP_FILES
 #------------------------------------------------------------------------------
 
 set (editing_H_FILES
+  editing/algoRepair_FindOpenEdges.h
   editing/asiAlgo_BRepNormalization.h
   editing/asiAlgo_BRepNormalizer.h
   editing/asiAlgo_DeleteEdges.h
@@ -134,6 +135,7 @@ set (editing_H_FILES
   editing/asiAlgo_TopoKill.h
 )
 set (editing_CPP_FILES
+  editing/algoRepair_FindOpenEdges.cpp
   editing/asiAlgo_BRepNormalization.cpp
   editing/asiAlgo_BRepNormalizer.cpp
   editing/asiAlgo_DeleteEdges.cpp

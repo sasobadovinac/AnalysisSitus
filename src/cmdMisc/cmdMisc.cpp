@@ -1585,6 +1585,8 @@ int MISC_TestEvalSurf(const Handle(asiTcl_Interp)& interp,
 
 //-----------------------------------------------------------------------------
 
+#include <algoRepair_FindOpenEdges.h>
+
 int MISC_Test(const Handle(asiTcl_Interp)& interp,
               int                          argc,
               const char**                 argv)
@@ -1594,7 +1596,34 @@ int MISC_Test(const Handle(asiTcl_Interp)& interp,
     return interp->ErrorOnWrongArgs(argv[0]);
   }
 
-  
+    // Get Part Node.
+  Handle(asiData_PartNode)
+    partNode = Handle(asiEngine_Model)::DownCast( interp->GetModel() )->GetPartNode();
+  //
+  if ( partNode.IsNull() || !partNode->IsWellFormed() )
+  {
+    interp->GetProgress().SendLogMessage(LogErr(Normal) << "Part Node is null or ill-defined.");
+    return TCL_OK;
+  }
+  TopoDS_Shape shape = partNode->GetShape();
+
+  cadpro::algoRepair_FindOpenEdges algo(shape, interp->GetProgress(), interp->GetPlotter());
+  //
+  if ( !algo.Perform() )
+    return TCL_ERROR;
+
+  const NCollection_Vector<TopTools_ListOfShape>& edges = algo.GetBoundaryContours();
+  //
+  for ( int k = 0; k < edges.Size(); ++k )
+  {
+    const TopTools_ListOfShape& list = edges[k];
+
+    for ( TopTools_ListIteratorOfListOfShape lit(list); lit.More(); lit.Next() )
+    {
+      interp->GetPlotter().DRAW_SHAPE(lit.Value(), Color_Red, 1.0, true, "openedge");
+    }
+  }
+
   return TCL_OK;
 }
 
